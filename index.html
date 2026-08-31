@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Берусь!</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="/assets/css/app.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="top">
+      <div class="brand">Берусь!</div>
+      <div id="user-chip" class="chip">…</div>
+    </header>
+
+    <nav class="tabs">
+      <button data-tab="feed" class="active">Лента</button>
+      <button data-tab="create">Заявка</button>
+      <button data-tab="mine">Мои</button>
+      <button data-tab="profile">Профиль</button>
+    </nav>
+
+    <main>
+      <section id="tab-feed" class="tab active">
+        <div class="filters">
+          <select id="filter-city"></select>
+          <select id="filter-cat"></select>
+        </div>
+        <div id="orders-list" class="list"></div>
+      </section>
+
+      <section id="tab-create" class="tab">
+        <label>Город</label>
+        <select id="new-city"></select>
+        <label>Категория</label>
+        <select id="new-cat"></select>
+        <label>Заголовок</label>
+        <input id="new-title" maxlength="200" placeholder="Например: уборка квартиры 40 м²" />
+        <label>Описание</label>
+        <textarea id="new-desc" rows="4" placeholder="Детали, адрес/район, когда нужно"></textarea>
+        <label>Бюджет ₽ (необязательно)</label>
+        <input id="new-budget" type="number" min="0" placeholder="5000" />
+        <button id="btn-create" class="primary">Опубликовать</button>
+      </section>
+
+      <section id="tab-mine" class="tab">
+        <h3>Мои заявки</h3>
+        <div id="my-orders" class="list"></div>
+        <h3>Мои отклики</h3>
+        <div id="my-bids" class="list"></div>
+      </section>
+
+      <section id="tab-profile" class="tab">
+        <label>Роль</label>
+        <select id="prof-role">
+          <option value="customer">Заказчик</option>
+          <option value="performer">Исполнитель</option>
+          <option value="both">И то, и другое</option>
+        </select>
+        <label>Город</label>
+        <select id="prof-city"></select>
+        <label>О себе</label>
+        <textarea id="prof-bio" rows="3" placeholder="Опыт, что делаете"></textarea>
+        <button id="btn-save-profile" class="primary">Сохранить</button>
+        <p class="hint">Отклики для исполнителей — бесплатно. Лимит 20 в сутки (антиспам).</p>
+      </section>
+
+      <section id="tab-order" class="tab">
+        <button id="btn-back-feed" class="link">← К ленте</button>
+        <div id="order-detail"></div>
+        <div id="bid-form" class="card">
+          <h3>Откликнуться бесплатно</h3>
+          <textarea id="bid-msg" rows="3" placeholder="Коротко: опыт, сроки, условия"></textarea>
+          <input id="bid-price" type="number" placeholder="Ваша цена ₽ (необяз.)" />
+          <button id="btn-bid" class="primary">Отправить отклик</button>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/assets/js/app.js"></script>
+</body>
+</html>
