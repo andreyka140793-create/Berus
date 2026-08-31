@@ -33,8 +33,12 @@ def get_settings() -> Settings:
 CITIES = [
     {"slug": "moscow", "name": "Москва"},
     {"slug": "spb", "name": "Санкт-Петербург"},
-    {"slug": "kazan", "name": "Казань"},
+    {"slug": "novosibirsk", "name": "Новосибирск"},
     {"slug": "ekb", "name": "Екатеринбург"},
+    {"slug": "kazan", "name": "Казань"},
+    {"slug": "nn", "name": "Нижний Новгород"},
+    {"slug": "chelyabinsk", "name": "Челябинск"},
+    {"slug": "samara", "name": "Самара"},
 ]
 
 CATEGORIES = [

@@ -7,6 +7,8 @@ from database import get_db
 from models.entities import User, Order, Bid, Review
 from services.auth_tg import validate_init_data
 from config import CITIES, CATEGORIES
+from services import notify as notify_svc
+import asyncio
 
 router = APIRouter(prefix="/api")
 
@@ -88,7 +90,7 @@ class OrderIn(BaseModel):
 
 
 @router.post("/orders")
-def create_order(body: OrderIn, user: User = Depends(current_user), db: Session = Depends(get_db)):
+async def create_order(body: OrderIn, user: User = Depends(current_user), db: Session = Depends(get_db)):
     order = Order(
         customer_id=user.id,
         city_slug=body.city_slug,
@@ -101,7 +103,24 @@ def create_order(body: OrderIn, user: User = Depends(current_user), db: Session 
     db.add(order)
     db.commit()
     db.refresh(order)
-    return {"id": order.id}
+
+    # уведомления исполнителям города (не заказчику)
+    performers = (
+        db.query(User)
+        .filter(
+            User.is_blocked.is_(False),
+            User.role.in_(("performer", "both")),
+            User.city_slug == order.city_slug,
+            User.id != user.id,
+        )
+        .all()
+    )
+    # если у исполнителя не указан город — тоже можно слать по желанию; пока только совпадение города
+    ids = [p.telegram_id for p in performers]
+    if ids:
+        await notify_svc.notify_new_order(order, ids)
+
+    return {"id": order.id, "notified_performers": len(ids)}
 
 
 @router.get("/orders")
@@ -172,7 +191,7 @@ class BidIn(BaseModel):
 
 
 @router.post("/orders/{order_id}/bids")
-def create_bid(
+async def create_bid(
     order_id: int,
     body: BidIn,
     user: User = Depends(current_user),
@@ -208,6 +227,19 @@ def create_bid(
     db.add(bid)
     db.commit()
     db.refresh(bid)
+
+    # уведомление заказчику
+    customer = o.customer
+    if customer and customer.telegram_id:
+        pname = user.full_name or (("@%s" % user.username) if user.username else "Исполнитель")
+        await notify_svc.notify_new_bid(
+            customer.telegram_id,
+            o.title,
+            pname,
+            bid.message,
+            bid.price,
+        )
+
     return {"id": bid.id, "free": True}
 
 
