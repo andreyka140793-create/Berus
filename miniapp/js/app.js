@@ -94,14 +94,17 @@ async function openOrder(id) {
   const o = await api("/api/orders/" + id);
   const box = document.getElementById("order-detail");
   const bids = (o.bids || [])
-    .map(
-      (b) =>
-        `<div class="card"><p><b>${escapeHtml(b.performer.full_name || b.performer.username || "Исполнитель")}</b> · ★ ${
-          b.performer.rating
-        }</p><p>${escapeHtml(b.message)}</p>${
-          b.price ? `<div class="meta">${b.price} ₽</div>` : ""
-        }</div>`
-    )
+    .map((b) => {
+      const name = b.performer.full_name || b.performer.username || "Исполнитель";
+      const link = b.performer.username
+        ? `<a class="tg-link" href="https://t.me/${encodeURIComponent(b.performer.username)}" target="_blank">Написать в Telegram</a>`
+        : `<span class="hint">Username не указан</span>`;
+      return `<div class="card"><p><b>${escapeHtml(name)}</b> · ★ ${
+        b.performer.rating
+      }</p><p>${escapeHtml(b.message)}</p>${
+        b.price ? `<div class="meta">${b.price} ₽</div>` : ""
+      }<div class="meta">${link}</div></div>`;
+    })
     .join("");
   box.innerHTML = `
     <div class="card">
